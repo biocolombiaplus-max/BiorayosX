@@ -1,0 +1,590 @@
+<title>BioRX Radiología</title>
+<meta name="description" content="Software de radiología e imagenología impulsado por IA: digitaliza placas reveladas químicamente y compártelas al instante." />
+<style>
+  :root{
+    --void:#f6f7fb;
+    --surface:#ffffff;
+    --surface-2:#eef1f8;
+    --line:#dde2ef;
+    --ink:#0c1226;
+    --ink-dim:#57608a;
+    --cyan:#0891a8;
+    --violet:#6d28d9;
+    --mint:#0d9488;
+    --gold:#b6790a;
+    --shadow: 0 20px 50px -25px rgba(12,18,38,.35);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --void:#070a16;
+      --surface:#0e1326;
+      --surface-2:#131a33;
+      --line:#232c4d;
+      --ink:#eef1ff;
+      --ink-dim:#9aa3c9;
+      --cyan:#3fd9f2;
+      --violet:#a78bfa;
+      --mint:#34d8ae;
+      --gold:#f4bf4f;
+      --shadow: 0 20px 60px -20px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --void:#070a16;
+    --surface:#0e1326;
+    --surface-2:#131a33;
+    --line:#232c4d;
+    --ink:#eef1ff;
+    --ink-dim:#9aa3c9;
+    --cyan:#3fd9f2;
+    --violet:#a78bfa;
+    --mint:#34d8ae;
+    --gold:#f4bf4f;
+    --shadow: 0 20px 60px -20px rgba(0,0,0,.6);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--void);
+    color:var(--ink);
+    font-family:"Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    padding-inline:0;
+  }
+  img{max-width:100%;}
+  h1,h2,h3,.display{
+    font-family:"Unbounded", "Plus Jakarta Sans", sans-serif;
+    text-wrap:balance;
+    letter-spacing:-.01em;
+    margin:0;
+  }
+  .mono{font-family:"JetBrains Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums;}
+  a{color:inherit;}
+  .wrap{max-width:1180px; margin-inline:auto; padding-inline:20px;}
+  section{padding-block:clamp(56px,9vw,110px);}
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:"JetBrains Mono", monospace;
+    font-size:.72rem; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--cyan); font-weight:500;
+  }
+  .eyebrow::before{content:""; width:7px; height:7px; border-radius:50%; background:var(--cyan); box-shadow:0 0 0 3px color-mix(in srgb, var(--cyan) 25%, transparent);}
+  .grad-text{
+    background:linear-gradient(100deg, var(--cyan), var(--violet) 60%, var(--mint));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:10px;
+    padding:14px 26px; border-radius:100px; font-weight:700; font-size:.95rem;
+    text-decoration:none; cursor:pointer; border:1px solid transparent;
+    transition:transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+    font-family:"Plus Jakarta Sans", sans-serif;
+  }
+  .btn:hover{transform:translateY(-2px);}
+  .btn:focus-visible{outline:2px solid var(--cyan); outline-offset:3px;}
+  .btn-primary{
+    background:linear-gradient(100deg, var(--mint), var(--cyan));
+    color:#04141a; box-shadow:0 14px 30px -12px color-mix(in srgb, var(--cyan) 60%, transparent);
+  }
+  .btn-ghost{
+    background:transparent; border-color:var(--line); color:var(--ink);
+  }
+  .btn-ghost:hover{border-color:var(--cyan);}
+  .btn-block{width:100%;}
+
+  header.nav{
+    position:sticky; top:env(safe-area-inset-top,0px); z-index:40;
+    background:color-mix(in srgb, var(--void) 82%, transparent);
+    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-row{display:flex; align-items:center; justify-content:space-between; padding-block:14px; gap:16px;}
+  .logo{display:flex; align-items:center; gap:10px; font-family:"Unbounded",sans-serif; font-weight:700; font-size:1.15rem;}
+  .logo-mark{
+    width:34px; height:34px; border-radius:10px;
+    background:linear-gradient(135deg, var(--cyan), var(--violet));
+    display:flex; align-items:center; justify-content:center;
+    color:#04141a; font-weight:800; font-size:.85rem;
+  }
+  .logo small{display:block; font-family:"Plus Jakarta Sans",sans-serif; font-weight:500; font-size:.62rem; color:var(--ink-dim); letter-spacing:.06em; text-transform:uppercase;}
+  nav.links{display:flex; gap:26px; font-size:.88rem; font-weight:600;}
+  nav.links a{color:var(--ink-dim); text-decoration:none;}
+  nav.links a:hover{color:var(--ink);}
+  .nav-actions{display:flex; align-items:center; gap:14px;}
+  .menu-btn{display:none; background:none; border:1px solid var(--line); border-radius:8px; width:38px; height:38px; color:var(--ink);}
+
+  /* HERO */
+  .hero{padding-block:clamp(48px,8vw,88px) clamp(40px,7vw,72px);}
+  .hero-grid{display:grid; grid-template-columns:1.05fr .95fr; gap:56px; align-items:center;}
+  .hero h1{font-size:clamp(2.1rem,4.6vw,3.4rem); line-height:1.06; font-weight:800; margin-block:18px 20px;}
+  .hero p.lead{color:var(--ink-dim); font-size:1.08rem; line-height:1.65; max-width:52ch;}
+  .hero-ctas{display:flex; gap:14px; flex-wrap:wrap; margin-top:30px;}
+  .trust-row{display:flex; gap:22px; flex-wrap:wrap; margin-top:34px; padding-top:22px; border-top:1px solid var(--line);}
+  .trust-item{font-size:.8rem; color:var(--ink-dim); display:flex; align-items:center; gap:8px;}
+  .trust-item b{color:var(--ink); font-family:"JetBrains Mono",monospace; font-size:.95rem;}
+
+  /* device visual */
+  .device{
+    position:relative; border-radius:26px; overflow:hidden;
+    background:var(--surface); border:1px solid var(--line); box-shadow:var(--shadow);
+    aspect-ratio:4/5;
+  }
+  .device-top{display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid var(--line); font-family:"JetBrains Mono",monospace; font-size:.7rem; color:var(--ink-dim);}
+  .dot-row{display:flex; gap:6px;}
+  .dot-row span{width:8px; height:8px; border-radius:50%; background:var(--line);}
+  .plate{position:relative; margin:18px; border-radius:16px; overflow:hidden; background:#050810; aspect-ratio:3/3.6;}
+  .plate svg{position:absolute; inset:0; width:100%; height:100%;}
+  .plate .scan{
+    position:absolute; top:0; bottom:0; width:2px;
+    background:linear-gradient(var(--cyan), var(--mint));
+    box-shadow:0 0 24px 4px color-mix(in srgb, var(--cyan) 70%, transparent);
+    animation:scan 3.6s ease-in-out infinite;
+  }
+  @keyframes scan{0%,100%{left:8%;} 50%{left:92%;}}
+  .plate-caption{position:absolute; bottom:10px; left:12px; right:12px; display:flex; justify-content:space-between; font-family:"JetBrains Mono",monospace; font-size:.62rem; color:#7fdcf0; text-transform:uppercase; letter-spacing:.08em;}
+  .device-foot{display:flex; justify-content:space-between; padding:12px 18px 18px; font-family:"JetBrains Mono",monospace; font-size:.68rem; color:var(--ink-dim);}
+  @media (prefers-reduced-motion: reduce){ .plate .scan{animation:none; left:50%;} }
+
+  /* pain / stats */
+  .stat-strip{border-top:1px solid var(--line); border-bottom:1px solid var(--line); background:var(--surface);}
+  .stat-strip .wrap{display:grid; grid-template-columns:repeat(4,1fr); gap:28px; padding-block:34px;}
+  .stat{text-align:left;}
+  .stat b{display:block; font-family:"JetBrains Mono",monospace; font-size:1.9rem; font-weight:700; background:linear-gradient(100deg,var(--cyan),var(--violet)); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .stat span{font-size:.82rem; color:var(--ink-dim);}
+
+  .section-head{max-width:640px; margin-bottom:44px;}
+  .section-head h2{font-size:clamp(1.7rem,3.2vw,2.4rem); margin-top:14px; font-weight:700;}
+  .section-head p{color:var(--ink-dim); margin-top:14px; line-height:1.6;}
+
+  /* how it works */
+  .steps{display:grid; grid-template-columns:repeat(4,1fr); gap:20px;}
+  .step{background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:24px 22px; display:flex; flex-direction:column; gap:14px;}
+  .step-num{font-family:"JetBrains Mono",monospace; font-size:.78rem; color:var(--cyan); font-weight:600;}
+  .step h3{font-size:1.02rem; font-weight:700;}
+  .step p{color:var(--ink-dim); font-size:.88rem; line-height:1.55;}
+
+  .tech-note{
+    margin-top:34px; border-radius:20px; padding:30px 32px;
+    background:var(--surface-2); border:1px solid var(--line);
+    display:grid; grid-template-columns:auto 1fr; gap:22px; align-items:start;
+  }
+  .tech-note .icon{width:44px; height:44px; border-radius:12px; background:linear-gradient(135deg,var(--violet),var(--cyan)); flex-shrink:0;}
+  .tech-note h4{font-family:"Unbounded",sans-serif; font-size:1.05rem; margin-bottom:10px;}
+  .tech-note p{color:var(--ink-dim); font-size:.92rem; line-height:1.65;}
+  .tech-note p + p{margin-top:10px;}
+  .tech-note strong{color:var(--ink);}
+
+  /* datasheet */
+  .datasheet{display:grid; grid-template-columns:1fr 1fr; gap:0; border:1px solid var(--line); border-radius:20px; overflow:hidden; background:var(--surface);}
+  .datasheet .row{display:flex; justify-content:space-between; gap:14px; padding:16px 24px; border-bottom:1px solid var(--line); font-size:.9rem;}
+  .datasheet .row:nth-child(odd){background:var(--surface-2);}
+  .datasheet .row span:first-child{color:var(--ink-dim);}
+  .datasheet .row span:last-child{font-family:"JetBrains Mono",monospace; font-weight:600; text-align:right;}
+  .datasheet-col:last-child .row:last-child, .datasheet-col:first-child .row:last-child{border-bottom:none;}
+  @media (max-width:760px){ .datasheet{grid-template-columns:1fr;} }
+
+  /* pricing */
+  .plans{display:grid; grid-template-columns:repeat(4,1fr); gap:18px;}
+  .plan{
+    position:relative; background:var(--surface); border:1px solid var(--line); border-radius:20px;
+    padding:28px 22px; display:flex; flex-direction:column; gap:16px;
+  }
+  .plan.featured{border-color:var(--cyan); box-shadow:0 0 0 1px var(--cyan), var(--shadow);}
+  .badge{position:absolute; top:-12px; left:22px; background:linear-gradient(100deg,var(--cyan),var(--mint)); color:#04141a; font-size:.68rem; font-weight:800; padding:5px 12px; border-radius:100px; letter-spacing:.03em;}
+  .plan-name{font-weight:700; font-size:1rem;}
+  .plan-price{font-family:"JetBrains Mono",monospace; font-size:2.1rem; font-weight:700;}
+  .plan-price sup{font-size:.9rem; font-weight:500; color:var(--ink-dim);}
+  .plan-price span{font-size:.85rem; color:var(--ink-dim); font-family:"Plus Jakarta Sans",sans-serif;}
+  .plan-studies{font-size:.85rem; color:var(--ink-dim);}
+  .plan-per{font-family:"JetBrains Mono",monospace; font-size:.78rem; color:var(--mint); background:color-mix(in srgb, var(--mint) 14%, transparent); display:inline-block; padding:4px 10px; border-radius:8px; width:fit-content;}
+  .plan-desc{font-size:.85rem; color:var(--ink-dim); line-height:1.5; flex-grow:1;}
+
+  /* implementation banner */
+  .impl{
+    border-radius:26px; padding:clamp(28px,4vw,48px); background:linear-gradient(120deg, var(--surface-2), var(--surface));
+    border:1px solid var(--line); display:grid; grid-template-columns:1.2fr .8fr; gap:36px; align-items:center;
+  }
+  .impl-price{display:flex; align-items:baseline; gap:14px; margin-block:18px;}
+  .impl-price .old{font-family:"JetBrains Mono",monospace; color:var(--ink-dim); text-decoration:line-through; font-size:1.3rem;}
+  .impl-price .new{font-family:"JetBrains Mono",monospace; font-size:2.6rem; font-weight:700; color:var(--mint);}
+  .impl ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px;}
+  .impl li{font-size:.9rem; color:var(--ink-dim); display:flex; gap:10px; align-items:flex-start;}
+  .impl li::before{content:"✓"; color:var(--mint); font-weight:800; flex-shrink:0;}
+  .impl-tag{font-family:"JetBrains Mono",monospace; font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:var(--gold); background:color-mix(in srgb, var(--gold) 16%, transparent); padding:5px 12px; border-radius:100px; display:inline-block;}
+
+  /* audience */
+  .audience{display:grid; grid-template-columns:repeat(4,1fr); gap:18px;}
+  .aud-card{background:var(--surface); border:1px solid var(--line); border-radius:18px; padding:22px; display:flex; flex-direction:column; gap:10px;}
+  .aud-card .ic{width:38px; height:38px; border-radius:10px; background:var(--surface-2); display:flex; align-items:center; justify-content:center; color:var(--cyan); font-size:1.1rem;}
+  .aud-card h3{font-size:.95rem; font-weight:700;}
+  .aud-card p{font-size:.83rem; color:var(--ink-dim); line-height:1.5;}
+
+  /* faq */
+  .faq{display:flex; flex-direction:column; gap:12px; max-width:820px;}
+  details{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px 20px;}
+  details summary{cursor:pointer; font-weight:700; font-size:.95rem; list-style:none; display:flex; justify-content:space-between; align-items:center; gap:14px;}
+  details summary::-webkit-details-marker{display:none;}
+  details summary::after{content:"+"; font-family:"JetBrains Mono",monospace; color:var(--cyan); font-size:1.2rem; flex-shrink:0;}
+  details[open] summary::after{content:"–";}
+  details p{margin-top:12px; color:var(--ink-dim); font-size:.9rem; line-height:1.6;}
+
+  .final-cta{text-align:center; border-radius:28px; padding:clamp(40px,6vw,72px) 24px; background:linear-gradient(120deg, var(--surface-2), var(--surface)); border:1px solid var(--line);}
+  .final-cta h2{font-size:clamp(1.7rem,3.6vw,2.5rem); max-width:26ch; margin-inline:auto;}
+  .final-cta p{color:var(--ink-dim); margin-block:16px 28px; max-width:50ch; margin-inline:auto;}
+  .disclaimer{font-size:.74rem; color:var(--ink-dim); max-width:640px; margin:22px auto 0; line-height:1.6; opacity:.8;}
+
+  footer{border-top:1px solid var(--line); padding-block:40px;}
+  .foot-grid{display:grid; grid-template-columns:1.4fr repeat(3,1fr); gap:32px;}
+  .foot-grid h4{font-size:.78rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-dim); margin-bottom:14px;}
+  .foot-grid a{display:block; font-size:.87rem; color:var(--ink-dim); text-decoration:none; margin-bottom:9px;}
+  .foot-grid a:hover{color:var(--cyan);}
+  .foot-bottom{margin-top:34px; padding-top:22px; border-top:1px solid var(--line); display:flex; justify-content:space-between; font-size:.78rem; color:var(--ink-dim); flex-wrap:wrap; gap:10px;}
+
+  .wa-float{
+    position:fixed; right:20px; bottom:calc(20px + env(safe-area-inset-bottom,0px)); z-index:50;
+    display:flex; align-items:center; gap:10px; padding:13px 20px; border-radius:100px;
+    background:linear-gradient(100deg,var(--mint),var(--cyan)); color:#04141a; font-weight:700; font-size:.88rem;
+    text-decoration:none; box-shadow:0 16px 34px -12px color-mix(in srgb, var(--mint) 55%, transparent);
+  }
+
+  @media (max-width:980px){
+    .hero-grid{grid-template-columns:1fr;}
+    .stat-strip .wrap{grid-template-columns:repeat(2,1fr); row-gap:22px;}
+    .steps{grid-template-columns:repeat(2,1fr);}
+    .plans{grid-template-columns:repeat(2,1fr);}
+    .impl{grid-template-columns:1fr;}
+    .audience{grid-template-columns:repeat(2,1fr);}
+    .foot-grid{grid-template-columns:repeat(2,1fr);}
+    nav.links{display:none;}
+    .menu-btn{display:block;}
+  }
+  @media (max-width:560px){
+    .stat-strip .wrap{grid-template-columns:1fr 1fr;}
+    .steps{grid-template-columns:1fr;}
+    .plans{grid-template-columns:1fr;}
+    .tech-note{grid-template-columns:1fr;}
+    .datasheet{grid-template-columns:1fr;}
+    .audience{grid-template-columns:1fr;}
+    .foot-grid{grid-template-columns:1fr;}
+    .wa-float span.wa-text{display:none;}
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap">
+
+<!-- CMS: número de contacto y textos de WhatsApp — centralizados aquí para fácil edición futura desde el panel admin -->
+<header class="nav">
+  <div class="wrap nav-row">
+    <div class="logo">
+      <div class="logo-mark">Rx</div>
+      <div>BioRX<small>Radiología con IA</small></div>
+    </div>
+    <nav class="links">
+      <a href="#tecnologia">Cómo funciona</a>
+      <a href="#calidad">Calidad</a>
+      <a href="#planes">Planes</a>
+      <a href="#implementacion">Implementación</a>
+      <a href="#faq">Preguntas</a>
+    </nav>
+    <div class="nav-actions">
+      <a class="btn btn-primary" id="nav-wa" href="#" target="_blank" rel="noopener">Hablar por WhatsApp</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- CMS: sección Hero -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="eyebrow">Impulsado por inteligencia artificial</span>
+        <h1>El software de radiología <span class="grad-text">más avanzado de Suramérica</span></h1>
+        <p class="lead">BioRX digitaliza en segundos las placas reveladas por químicos de tu equipo de rayos X actual y las envía por WhatsApp o correo, listas para verse en cualquier TV, computador o celular — sin comprar un digitalizador CR o DR.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" id="hero-wa" href="#" target="_blank" rel="noopener">Solicitar demo por WhatsApp</a>
+          <a class="btn btn-ghost" href="#planes">Ver planes y precios</a>
+        </div>
+        <div class="trust-row">
+          <div class="trust-item"><b>Sin digitalizador</b>Funciona con equipo de revelado químico</div>
+          <div class="trust-item"><b>&lt; 60 seg</b>De placa revelada a imagen digital</div>
+          <div class="trust-item"><b>WhatsApp / TV</b>Envío y proyección instantánea</div>
+        </div>
+      </div>
+      <div class="device" role="img" aria-label="Ilustración conceptual: transición de una placa de rayos X revelada a una imagen digital mejorada por IA">
+        <div class="device-top"><span>BIORX · CAPTURA EN VIVO</span><div class="dot-row"><span></span><span></span><span></span></div></div>
+        <div class="plate">
+          <svg viewBox="0 0 300 360" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <linearGradient id="filmSide" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#3a3f4d"/>
+                <stop offset="1" stop-color="#1c2130"/>
+              </linearGradient>
+              <linearGradient id="digitalSide" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#0b2a33"/>
+                <stop offset="1" stop-color="#081826"/>
+              </linearGradient>
+            </defs>
+            <rect x="0" y="0" width="150" height="360" fill="url(#filmSide)"/>
+            <rect x="150" y="0" width="150" height="360" fill="url(#digitalSide)"/>
+            <g stroke="#9aa3b5" stroke-width="2" fill="none" opacity=".55">
+              <path d="M70 60 C40 110, 40 250, 70 300"/>
+              <path d="M230 60 C260 110, 260 250, 230 300"/>
+              <line x1="150" y1="45" x2="150" y2="315"/>
+              <path d="M110 65 L90 90" /><path d="M190 65 L210 90" />
+            </g>
+            <g stroke="#57eaff" stroke-width="2.4" fill="none" opacity=".95">
+              <path d="M70 60 C40 110, 40 250, 70 300"/>
+              <path d="M230 60 C260 110, 260 250, 230 300"/>
+              <line x1="150" y1="45" x2="150" y2="315"/>
+              <path d="M110 65 L90 90" /><path d="M190 65 L210 90" />
+            </g>
+            <rect x="150" y="0" width="150" height="360" fill="#081826" opacity=".001"/>
+            <g clip-path="inset(0 0 0 150)">
+              <rect x="0" y="0" width="300" height="360" fill="#04202b" opacity=".35"/>
+            </g>
+          </svg>
+          <div class="scan"></div>
+          <div class="plate-caption"><span>Film · ruido alto</span><span>IA · realzado</span></div>
+        </div>
+        <div class="device-foot"><span>Densidad óptica: normalizada</span><span class="mono">Agfa 14x17 · nivel alto</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CMS: barra de estadísticas del problema -->
+  <section class="stat-strip">
+    <div class="wrap">
+      <div class="stat"><b>15–20 min</b><span>de espera promedio por un revelado químico</span></div>
+      <div class="stat"><b>$5–15k</b><span>cuesta un digitalizador CR/DR tradicional</span></div>
+      <div class="stat"><b>0</b><span>equipos nuevos que tienes que comprar</span></div>
+      <div class="stat"><b>1 clic</b><span>para enviar el estudio por WhatsApp</span></div>
+    </div>
+  </section>
+
+  <!-- CMS: sección Cómo funciona / Tecnología -->
+  <section id="tecnologia" class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Tecnología</span>
+      <h2>De la placa revelada a una imagen digital, en 4 pasos</h2>
+      <p>Diseñado para consultorios y centros que todavía revelan con químicos y no pueden justificar un equipo CR o DR nuevo.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="step-num">01</span><h3>Coloca la placa en el negatoscopio</h3><p>Usa tu visor de luz actual o la estación de captura BioRX que instalamos junto a tu cuarto oscuro.</p></div>
+      <div class="step"><span class="step-num">02</span><h3>Captura con la app BioRX</h3><p>La cámara del celular o nuestra estación óptica detecta los bordes de la placa y corrige perspectiva, brillo y reflejos automáticamente.</p></div>
+      <div class="step"><span class="step-num">03</span><h3>La IA realza la imagen</h3><p>Reducción de ruido, ecualización de densidad óptica y nitidez hasta un estándar equivalente a una placa Agfa 14x17 de alta gama.</p></div>
+      <div class="step"><span class="step-num">04</span><h3>Envía y proyecta al instante</h3><p>Comparte por WhatsApp o correo, o ábrela en el visor web BioRX desde una TV, computador o celular.</p></div>
+    </div>
+
+    <div class="tech-note">
+      <div class="icon" aria-hidden="true"></div>
+      <div>
+        <h4>¿Por qué no "conectamos" directamente el equipo de rayos X?</h4>
+        <p>Un generador de rayos X con revelado químico <strong>no emite ninguna señal digital</strong>: la imagen solo existe, físicamente, como plata metálica sobre la placa ya revelada. No hay un cable ni un puerto del que "sacar" esa imagen — por eso ningún software puede interceptar una señal que no existe.</p>
+        <p>Lo que sí es posible, y es exactamente lo que hace BioRX, es <strong>capturar ópticamente la placa revelada</strong> con una estación de alta precisión y dejar que la IA corrija densidad, perspectiva, ruido y nitidez hasta igualar la calidad de un digitalizador CR de gama alta — a una fracción de su costo y sin reemplazar el equipo que ya tienes. Si tu centro ya cuenta con un equipo CR o DR digital, también podemos integrarlo directo por red o DICOM.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CMS: sección Calidad de imagen -->
+  <section id="calidad" class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Ficha técnica</span>
+      <h2>Calidad de imagen de nivel profesional</h2>
+      <p>Cada estudio se procesa con el mismo estándar, sin importar la antigüedad del equipo de origen.</p>
+    </div>
+    <div class="datasheet">
+      <div class="datasheet-col">
+        <div class="row"><span>Resolución de captura</span><span>Equivalente a placa 14x17" alta densidad</span></div>
+        <div class="row"><span>Corrección de perspectiva</span><span>Automática por IA</span></div>
+        <div class="row"><span>Reducción de ruido y grano</span><span>Automática por IA</span></div>
+        <div class="row"><span>Igualación de densidad óptica</span><span>Nivel Agfa alta gama</span></div>
+      </div>
+      <div class="datasheet-col">
+        <div class="row"><span>Formatos de salida</span><span>JPEG / PNG alta resolución</span></div>
+        <div class="row"><span>Exportación DICOM</span><span>En hoja de ruta</span></div>
+        <div class="row"><span>Visor web (zoom, brillo/contraste)</span><span>Incluido</span></div>
+        <div class="row"><span>Entrega</span><span>WhatsApp, correo o enlace</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CMS: sección Planes -->
+  <section id="planes" class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Planes mensuales</span>
+      <h2>Un plan por cantidad de revelados, no por sorpresas</h2>
+      <p>El tamaño de referencia de cada revelado equivale a una placa 14x17 Agfa de alto nivel. Precios en dólares, facturación mensual.</p>
+    </div>
+    <div class="plans">
+      <div class="plan">
+        <div class="plan-name">Básico</div>
+        <div class="plan-price">$70<span>/mes</span></div>
+        <div class="plan-studies">50 revelados al mes</div>
+        <span class="plan-per">$1.40 por estudio</span>
+        <p class="plan-desc">Ideal para consultorios y clínicas pequeñas que están empezando a digitalizar.</p>
+        <a class="btn btn-ghost btn-block plan-wa" data-plan="Básico ($70/mes · 50 revelados)" href="#" target="_blank" rel="noopener">Elegir Básico</a>
+      </div>
+      <div class="plan featured">
+        <span class="badge">Más elegido</span>
+        <div class="plan-name">Estándar</div>
+        <div class="plan-price">$120<span>/mes</span></div>
+        <div class="plan-studies">100 revelados al mes</div>
+        <span class="plan-per">$1.20 por estudio</span>
+        <p class="plan-desc">El equilibrio ideal para centros de imagenología con flujo constante de pacientes.</p>
+        <a class="btn btn-primary btn-block plan-wa" data-plan="Estándar ($120/mes · 100 revelados)" href="#" target="_blank" rel="noopener">Elegir Estándar</a>
+      </div>
+      <div class="plan">
+        <div class="plan-name">Avanzado</div>
+        <div class="plan-price">$200<span>/mes</span></div>
+        <div class="plan-studies">200 revelados al mes</div>
+        <span class="plan-per">$1.00 por estudio</span>
+        <p class="plan-desc">Para centros con alto volumen y varios consultorios trabajando en simultáneo.</p>
+        <a class="btn btn-ghost btn-block plan-wa" data-plan="Avanzado ($200/mes · 200 revelados)" href="#" target="_blank" rel="noopener">Elegir Avanzado</a>
+      </div>
+      <div class="plan">
+        <div class="plan-name">Plus</div>
+        <div class="plan-price">$300<span>/mes</span></div>
+        <div class="plan-studies">201+ revelados, sin límite mensual</div>
+        <span class="plan-per">Volumen ilimitado</span>
+        <p class="plan-desc">Para centros de referencia y hospitales con alta demanda de estudios.</p>
+        <a class="btn btn-ghost btn-block plan-wa" data-plan="Plus ($300/mes · revelados ilimitados)" href="#" target="_blank" rel="noopener">Elegir Plus</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CMS: sección Implementación -->
+  <section id="implementacion" class="wrap">
+    <div class="impl">
+      <div>
+        <span class="impl-tag">Oferta de lanzamiento</span>
+        <h2 style="font-size:clamp(1.5rem,3vw,2.1rem); margin-top:16px;">Implementación: conectamos tu equipo y hacemos todas las pruebas</h2>
+        <div class="impl-price"><span class="old mono">$500</span><span class="new mono">$200</span><span style="color:var(--ink-dim); font-size:.85rem;">pago único</span></div>
+        <a class="btn btn-primary" id="impl-wa" href="#" target="_blank" rel="noopener">Agendar implementación</a>
+      </div>
+      <ul>
+        <li>Conexión y calibración de tu equipo de revelado actual</li>
+        <li>Pruebas de calidad con placas de referencia</li>
+        <li>Ajuste del motor de IA a tu tipo de equipo y químicos</li>
+        <li>Capacitación al personal técnico y administrativo</li>
+        <li>Soporte de garantía durante los primeros 30 días</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- CMS: sección Para quién es -->
+  <section class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Para quién es BioRX</span>
+      <h2>Construido para el personal de salud que aún revela con químicos</h2>
+    </div>
+    <div class="audience">
+      <div class="aud-card"><div class="ic">✚</div><h3>Radiólogos independientes</h3><p>Envía el estudio al médico tratante sin que el paciente cargue la placa física.</p></div>
+      <div class="aud-card"><div class="ic">🏥</div><h3>Centros de imagenología</h3><p>Digitaliza todo tu flujo diario sin invertir en un equipo CR o DR nuevo.</p></div>
+      <div class="aud-card"><div class="ic">🧪</div><h3>Laboratorios clínicos</h3><p>Integra imagenología a tus procesos de auditoría médica y reportes.</p></div>
+      <div class="aud-card"><div class="ic">🏘️</div><h3>Clínicas y hospitales rurales</h3><p>Lleva telemedicina a zonas donde renovar el equipo no es viable hoy.</p></div>
+    </div>
+  </section>
+
+  <!-- CMS: FAQ -->
+  <section id="faq" class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Preguntas frecuentes</span>
+      <h2>Todo lo que necesitas saber antes de empezar</h2>
+    </div>
+    <div class="faq">
+      <details>
+        <summary>¿Necesito comprar un digitalizador CR o DR?</summary>
+        <p>No. BioRX funciona con tu equipo de revelado químico actual mediante una estación óptica de captura, sin reemplazar tu generador de rayos X ni tu cuarto oscuro.</p>
+      </details>
+      <details>
+        <summary>¿Y si mi equipo ya es digital (CR o DR)?</summary>
+        <p>También lo integramos, directamente por red o DICOM, para centralizar el envío por WhatsApp y correo junto con tus equipos analógicos.</p>
+      </details>
+      <details>
+        <summary>¿La calidad es suficiente para uso clínico?</summary>
+        <p>La imagen está optimizada para visualización clínica, seguimiento y telemedicina. El diagnóstico definitivo siempre debe apoyarse en el criterio del médico especialista y en la normativa local vigente.</p>
+      </details>
+      <details>
+        <summary>¿Cómo se factura el servicio?</summary>
+        <p>Por plan mensual según la cantidad de revelados (estudios digitalizados) que necesites, más un pago único de implementación la primera vez.</p>
+      </details>
+      <details>
+        <summary>¿Cómo veo la imagen en una TV?</summary>
+        <p>Desde el visor web BioRX en cualquier navegador conectado a la TV, o compartiendo la imagen recibida por WhatsApp directamente al dispositivo.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- CMS: CTA final -->
+  <section class="wrap">
+    <div class="final-cta">
+      <span class="eyebrow" style="justify-content:center;">Empecemos hoy</span>
+      <h2>Lleva tu centro de radiología al mundo digital, sin cambiar tu equipo</h2>
+      <p>Escríbenos por WhatsApp y agenda una demo con tus propias placas.</p>
+      <a class="btn btn-primary" id="final-wa" href="#" target="_blank" rel="noopener">Hablar con BioRX por WhatsApp</a>
+      <p class="disclaimer">BioRX es una herramienta de digitalización y distribución de imágenes de apoyo visual y telemedicina. No sustituye el criterio del médico especialista ni reemplaza equipos certificados para diagnóstico primario donde la normativa local lo exija.</p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="logo"><div class="logo-mark">Rx</div><div>BioRX<small>Radiología con IA</small></div></div>
+        <p style="color:var(--ink-dim); font-size:.85rem; margin-top:14px; max-width:32ch; line-height:1.6;">Software de radiología e imagenología impulsado por inteligencia artificial, para Venezuela y Suramérica.</p>
+      </div>
+      <div>
+        <h4>Producto</h4>
+        <a href="#tecnologia">Cómo funciona</a>
+        <a href="#calidad">Calidad de imagen</a>
+        <a href="#planes">Planes</a>
+      </div>
+      <div>
+        <h4>Empresa</h4>
+        <a href="#implementacion">Implementación</a>
+        <a href="#faq">Preguntas frecuentes</a>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <a id="foot-wa" href="#" target="_blank" rel="noopener">WhatsApp: +57 350 545 7420</a>
+        <a href="mailto:biomarketing.salud@gmail.com">biomarketing.salud@gmail.com</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 BioRX. Todos los derechos reservados.</span>
+      <span>Hecho para radiólogos y centros de imagenología de Suramérica.</span>
+    </div>
+  </div>
+</footer>
+
+<a class="wa-float" id="float-wa" href="#" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.1-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.1-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.5-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5.1-.1.2-.3.3-.5.1-.2 0-.4 0-.5C10.1 9 9.6 7.7 9.4 7.2c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.3.2-.7.2-1.2.2-1.3-.1-.2-.3-.2-.6-.4z"/><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.5-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2z"/></svg>
+  <span class="wa-text">WhatsApp</span>
+</a>
+
+<script>
+(function(){
+  try{
+    var phone = "573505457420";
+    var base = "https://wa.me/" + phone + "?text=";
+    var defaultMsg = "Hola, quiero información sobre BioRX para digitalizar mi equipo de rayos X.";
+    var implMsg = "Hola, quiero agendar la implementación de BioRX ($200 - precio de lanzamiento) en mi centro.";
+
+    function link(text){ return base + encodeURIComponent(text); }
+
+    ["nav-wa","hero-wa","final-wa","float-wa"].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el) el.href = link(defaultMsg);
+    });
+    var footWa = document.getElementById("foot-wa");
+    if(footWa) footWa.href = link(defaultMsg);
+    var implWa = document.getElementById("impl-wa");
+    if(implWa) implWa.href = link(implMsg);
+
+    document.querySelectorAll(".plan-wa").forEach(function(btn){
+      var plan = btn.getAttribute("data-plan");
+      btn.href = link("Hola, quiero contratar el plan " + plan + " de BioRX.");
+    });
+  }catch(e){}
+})();
+</script>
