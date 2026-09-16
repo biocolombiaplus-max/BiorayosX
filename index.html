@@ -61,6 +61,22 @@
   a{color:inherit;}
   .wrap{max-width:1180px; margin-inline:auto; padding-inline:20px;}
   section{padding-block:clamp(56px,9vw,110px);}
+
+  /* CMS: cada sección admite una imagen de fondo vía --bg-img (definible desde el panel admin);
+     sin imagen, cae en un degradado ambiental por defecto para que la página no se vea plana */
+  .bg-slot{
+    position:relative;
+    background-repeat:no-repeat;
+    background-size:cover,cover,cover,cover;
+    background-position:center,center,center,center;
+    background-image:
+      linear-gradient(180deg, color-mix(in srgb, var(--void) 30%, transparent) 0%, var(--void) 94%),
+      var(--bg-img, none),
+      radial-gradient(ellipse 60% 55% at var(--orb1-x,14%) var(--orb1-y,8%), color-mix(in srgb, var(--orb1, var(--cyan)) 20%, transparent), transparent 62%),
+      radial-gradient(ellipse 55% 50% at var(--orb2-x,88%) var(--orb2-y,92%), color-mix(in srgb, var(--orb2, var(--violet)) 17%, transparent), transparent 62%);
+  }
+  .bg-slot.variant-b{ --orb1:var(--violet); --orb2:var(--mint); --orb1-x:86%; --orb1-y:10%; --orb2-x:12%; --orb2-y:90%; }
+  .bg-slot.variant-c{ --orb1:var(--mint); --orb2:var(--cyan); --orb1-x:18%; --orb1-y:90%; --orb2-x:90%; --orb2-y:10%; }
   .eyebrow{
     display:inline-flex; align-items:center; gap:8px;
     font-family:"JetBrains Mono", monospace;
@@ -125,27 +141,48 @@
   .device{
     position:relative; border-radius:26px; overflow:hidden;
     background:var(--surface); border:1px solid var(--line); box-shadow:var(--shadow);
-    aspect-ratio:4/5;
   }
   .device-top{display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid var(--line); font-family:"JetBrains Mono",monospace; font-size:.7rem; color:var(--ink-dim);}
   .dot-row{display:flex; gap:6px;}
   .dot-row span{width:8px; height:8px; border-radius:50%; background:var(--line);}
-  .plate{position:relative; margin:18px; border-radius:16px; overflow:hidden; background:#050810; aspect-ratio:3/3.6;}
-  .plate svg{position:absolute; inset:0; width:100%; height:100%;}
-  .plate .scan{
+  .hd-badge{flex-shrink:0; background:rgba(52,216,166,.16); border:1px solid rgba(52,216,166,.5); color:#5eead4; font-family:"JetBrains Mono",monospace; font-size:.58rem; font-weight:700; letter-spacing:.06em; padding:4px 10px; border-radius:100px; white-space:nowrap;}
+
+  /* mockup de la interfaz BioRX (reemplaza cualquier imagen real que se cargue desde el admin) */
+  .app-mock{display:flex; flex-direction:column; gap:16px; padding:18px;}
+  .app-mock-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .app-mock-label{display:block; font-family:"JetBrains Mono",monospace; font-size:.6rem; text-transform:uppercase; letter-spacing:.09em; color:var(--ink-dim);}
+  .app-mock-top h4{font-family:"Unbounded",sans-serif; font-size:.92rem; font-weight:600; margin-top:5px;}
+  .app-mock-preview{
+    position:relative; border-radius:16px; overflow:hidden; aspect-ratio:16/10;
+    border:1px solid var(--line);
+    background-image:
+      linear-gradient(155deg, color-mix(in srgb, var(--cyan) 20%, transparent), transparent 60%),
+      linear-gradient(-25deg, color-mix(in srgb, var(--violet) 16%, transparent), transparent 55%),
+      repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 1px, transparent 1px 4px),
+      var(--bg-preview, none);
+    background-size:cover; background-position:center; background-color:#050b16;
+  }
+  .app-mock-preview .scan{
     position:absolute; top:0; bottom:0; width:2px;
     background:linear-gradient(var(--cyan), var(--mint));
     box-shadow:0 0 24px 4px color-mix(in srgb, var(--cyan) 70%, transparent);
     animation:scan 3.6s ease-in-out infinite;
   }
   @keyframes scan{0%,100%{left:8%;} 50%{left:92%;}}
-  .plate-caption{position:absolute; bottom:10px; left:12px; right:12px; display:flex; justify-content:space-between; font-family:"JetBrains Mono",monospace; font-size:.62rem; color:#7fdcf0; text-transform:uppercase; letter-spacing:.08em;}
-  .hd-badge{position:absolute; top:10px; right:10px; background:rgba(52,216,166,.16); border:1px solid rgba(52,216,166,.5); color:#5eead4; font-family:"JetBrains Mono",monospace; font-size:.58rem; font-weight:700; letter-spacing:.06em; padding:4px 10px; border-radius:100px;}
-  .device-foot{display:flex; justify-content:space-between; padding:12px 18px 18px; font-family:"JetBrains Mono",monospace; font-size:.68rem; color:var(--ink-dim);}
-  @media (prefers-reduced-motion: reduce){ .plate .scan{animation:none; left:50%;} }
+  @media (prefers-reduced-motion: reduce){ .app-mock-preview .scan{animation:none; left:50%;} }
+  .app-mock-list{display:flex; flex-direction:column; gap:8px;}
+  .app-row{display:flex; align-items:center; gap:11px; padding:10px 12px; border:1px solid var(--line); border-radius:12px; background:var(--surface-2);}
+  .app-row .dot{width:8px; height:8px; border-radius:50%; flex-shrink:0;}
+  .app-row .dot.ready{background:var(--mint);}
+  .app-row .dot.busy{background:var(--gold); box-shadow:0 0 0 3px color-mix(in srgb, var(--gold) 25%, transparent);}
+  .app-row-info{flex-grow:1; min-width:0;}
+  .app-row-info b{display:block; font-size:.82rem; font-weight:600;}
+  .app-row-info small{display:block; font-size:.66rem; color:var(--ink-dim); font-family:"JetBrains Mono",monospace; margin-top:1px;}
+  .chip{font-family:"JetBrains Mono",monospace; font-size:.6rem; font-weight:700; padding:4px 9px; border-radius:100px; background:color-mix(in srgb, var(--mint) 18%, transparent); color:var(--mint); flex-shrink:0;}
+  .chip.busy{background:color-mix(in srgb, var(--gold) 20%, transparent); color:var(--gold);}
 
   /* pain / stats */
-  .stat-strip{border-top:1px solid var(--line); border-bottom:1px solid var(--line); background:var(--surface);}
+  .stat-strip{border-top:1px solid var(--line); border-bottom:1px solid var(--line); background-color:var(--surface);}
   .stat-strip .wrap{display:grid; grid-template-columns:repeat(4,1fr); gap:28px; padding-block:34px;}
   .stat{text-align:left;}
   .stat b{display:block; font-family:"JetBrains Mono",monospace; font-size:1.9rem; font-weight:700; background:linear-gradient(100deg,var(--cyan),var(--violet)); -webkit-background-clip:text; background-clip:text; color:transparent;}
@@ -180,7 +217,7 @@
   .datasheet .row span:first-child{color:var(--ink-dim);}
   .datasheet .row span:last-child{font-family:"JetBrains Mono",monospace; font-weight:600; text-align:right;}
   .datasheet-col:last-child .row:last-child, .datasheet-col:first-child .row:last-child{border-bottom:none;}
-  @media (max-width:760px){ .datasheet{grid-template-columns:1fr;} .paths{grid-template-columns:1fr;} }
+  @media (max-width:760px){ .datasheet{grid-template-columns:1fr;} }
 
   /* two paths */
   .paths{display:grid; grid-template-columns:1fr 1fr; gap:22px;}
@@ -194,6 +231,7 @@
   .path-steps{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:11px;}
   .path-steps li{display:flex; gap:10px; font-size:.85rem; color:var(--ink-dim); line-height:1.45; align-items:flex-start;}
   .path-steps li b{color:var(--cyan); font-family:"JetBrains Mono",monospace; font-size:.74rem; flex-shrink:0; width:18px; padding-top:1px;}
+  @media (max-width:760px){ .paths{grid-template-columns:1fr;} }
 
   /* pricing */
   .plans{display:grid; grid-template-columns:repeat(4,1fr); gap:18px;}
@@ -326,8 +364,8 @@
 </header>
 
 <main>
-  <!-- CMS: sección Hero -->
-  <section class="hero">
+  <!-- CMS: sección Hero — bg-slot admite imagen de fondo vía style="--bg-img:url(...)" desde el panel admin -->
+  <section class="hero bg-slot">
     <div class="wrap hero-grid">
       <div>
         <span class="eyebrow">Tecnología CR + inteligencia artificial</span>
@@ -343,134 +381,30 @@
           <div class="trust-item"><b>WhatsApp / TV</b>Envío y proyección instantánea</div>
         </div>
       </div>
-      <div class="device" role="img" aria-label="Ilustración conceptual de una radiografía de tórax (no corresponde a un paciente real): a la izquierda, el resultado desgastado de una placa revelada químicamente; a la derecha, la misma toma realzada en alta definición por la IA de BioRX">
-        <div class="device-top"><span>BIORX · CAPTURA EN VIVO</span><div class="dot-row"><span></span><span></span><span></span></div></div>
-        <div class="plate">
-          <svg viewBox="0 0 300 360" preserveAspectRatio="xMidYMid slice">
-            <defs>
-              <linearGradient id="filmSide" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#33352f"/>
-                <stop offset="1" stop-color="#17181a"/>
-              </linearGradient>
-              <linearGradient id="digitalSide" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#061c22"/>
-                <stop offset="1" stop-color="#020a10"/>
-              </linearGradient>
-              <radialGradient id="heartGlowBase" cx=".5" cy=".5" r=".5">
-                <stop offset="0" stop-color="#9aa3b5" stop-opacity=".5"/>
-                <stop offset="1" stop-color="#9aa3b5" stop-opacity="0"/>
-              </radialGradient>
-              <radialGradient id="heartGlowBright" cx=".5" cy=".5" r=".5">
-                <stop offset="0" stop-color="#bff6ff" stop-opacity=".8"/>
-                <stop offset="1" stop-color="#bff6ff" stop-opacity="0"/>
-              </radialGradient>
-              <radialGradient id="vignette" cx=".5" cy=".48" r=".72">
-                <stop offset=".6" stop-color="#000" stop-opacity="0"/>
-                <stop offset="1" stop-color="#000" stop-opacity=".55"/>
-              </radialGradient>
-              <clipPath id="rightHalf"><rect x="150" y="0" width="150" height="360"/></clipPath>
-              <pattern id="scanlines" width="5" height="5" patternUnits="userSpaceOnUse">
-                <line x1="0" y1="0" x2="5" y2="0" stroke="#8ff2ff" stroke-width=".5" opacity=".5"/>
-              </pattern>
-              <filter id="grain" x="-20%" y="-20%" width="140%" height="140%">
-                <feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="7" stitchTiles="stitch" result="n"/>
-                <feColorMatrix in="n" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .5 0"/>
-              </filter>
-              <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
-                <feGaussianBlur stdDeviation="1.6" result="b"/>
-                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-              </filter>
-            </defs>
-
-            <rect x="0" y="0" width="150" height="360" fill="url(#filmSide)"/>
-            <rect x="150" y="0" width="150" height="360" fill="url(#digitalSide)"/>
-
-            <!-- anatomía base (tenue, ambos lados) -->
-            <ellipse cx="128" cy="232" rx="52" ry="66" fill="url(#heartGlowBase)"/>
-            <g fill="none" stroke="#9aa3b5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".55">
-              <path d="M150 66 C130 58 104 54 82 62"/>
-              <path d="M150 66 C170 58 196 54 218 62"/>
-              <path d="M146 74 C104 80 66 98 50 138"/>
-              <path d="M145 98 C100 106 60 132 44 176"/>
-              <path d="M144 122 C98 132 56 164 44 216"/>
-              <path d="M144 146 C98 160 58 198 52 254"/>
-              <path d="M145 170 C100 186 64 224 62 288"/>
-              <path d="M154 74 C196 80 234 98 250 138"/>
-              <path d="M155 98 C200 106 240 132 256 176"/>
-              <path d="M156 122 C202 132 244 164 256 216"/>
-              <path d="M156 146 C202 160 242 198 248 254"/>
-              <path d="M155 170 C200 186 236 224 238 288"/>
-              <path d="M52 298 C90 258 132 258 152 298"/>
-              <path d="M152 298 C176 254 222 252 252 298"/>
-              <circle cx="72" cy="86" r="17" fill="#9aa3b5" fill-opacity=".1" stroke-opacity=".45"/>
-              <circle cx="228" cy="86" r="17" fill="#9aa3b5" fill-opacity=".1" stroke-opacity=".45"/>
-              <g opacity=".65" stroke-width="1.3">
-                <path d="M132 165 L108 148"/><path d="M132 172 L100 176"/><path d="M134 180 L104 204"/>
-                <path d="M168 165 L192 148"/><path d="M168 172 L200 176"/><path d="M166 180 L196 204"/>
-              </g>
-            </g>
-            <g fill="#9aa3b5" opacity=".45">
-              <rect x="142" y="66" width="16" height="14" rx="3"/><rect x="142" y="84" width="16" height="14" rx="3"/>
-              <rect x="142" y="102" width="16" height="14" rx="3"/><rect x="142" y="120" width="16" height="14" rx="3"/>
-              <rect x="142" y="138" width="16" height="14" rx="3"/><rect x="142" y="156" width="16" height="14" rx="3"/>
-              <rect x="142" y="174" width="16" height="14" rx="3"/><rect x="142" y="192" width="16" height="14" rx="3"/>
-              <rect x="142" y="210" width="16" height="14" rx="3"/><rect x="142" y="228" width="16" height="14" rx="3"/>
-              <rect x="142" y="246" width="16" height="14" rx="3"/><rect x="142" y="264" width="16" height="14" rx="3"/>
-              <rect x="142" y="282" width="16" height="14" rx="3"/>
-            </g>
-
-            <!-- realce IA: mismo estudio, solo en el lado digital -->
-            <g clip-path="url(#rightHalf)">
-              <ellipse cx="128" cy="232" rx="52" ry="66" fill="url(#heartGlowBright)"/>
-              <g fill="none" stroke="#c8f9ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
-                <path d="M150 66 C130 58 104 54 82 62"/>
-                <path d="M150 66 C170 58 196 54 218 62"/>
-                <path d="M146 74 C104 80 66 98 50 138"/>
-                <path d="M145 98 C100 106 60 132 44 176"/>
-                <path d="M144 122 C98 132 56 164 44 216"/>
-                <path d="M144 146 C98 160 58 198 52 254"/>
-                <path d="M145 170 C100 186 64 224 62 288"/>
-                <path d="M154 74 C196 80 234 98 250 138"/>
-                <path d="M155 98 C200 106 240 132 256 176"/>
-                <path d="M156 122 C202 132 244 164 256 216"/>
-                <path d="M156 146 C202 160 242 198 248 254"/>
-                <path d="M155 170 C200 186 236 224 238 288"/>
-                <path d="M52 298 C90 258 132 258 152 298"/>
-                <path d="M152 298 C176 254 222 252 252 298"/>
-                <circle cx="72" cy="86" r="17" fill="#c8f9ff" fill-opacity=".16" stroke-opacity=".7"/>
-                <circle cx="228" cy="86" r="17" fill="#c8f9ff" fill-opacity=".16" stroke-opacity=".7"/>
-                <g opacity=".9" stroke-width="1.4">
-                  <path d="M132 165 L108 148"/><path d="M132 172 L100 176"/><path d="M134 180 L104 204"/>
-                  <path d="M168 165 L192 148"/><path d="M168 172 L200 176"/><path d="M166 180 L196 204"/>
-                </g>
-              </g>
-              <g fill="#e4fdff" opacity=".85">
-                <rect x="142" y="66" width="16" height="14" rx="3"/><rect x="142" y="84" width="16" height="14" rx="3"/>
-                <rect x="142" y="102" width="16" height="14" rx="3"/><rect x="142" y="120" width="16" height="14" rx="3"/>
-                <rect x="142" y="138" width="16" height="14" rx="3"/><rect x="142" y="156" width="16" height="14" rx="3"/>
-                <rect x="142" y="174" width="16" height="14" rx="3"/><rect x="142" y="192" width="16" height="14" rx="3"/>
-                <rect x="142" y="210" width="16" height="14" rx="3"/><rect x="142" y="228" width="16" height="14" rx="3"/>
-                <rect x="142" y="246" width="16" height="14" rx="3"/><rect x="142" y="264" width="16" height="14" rx="3"/>
-                <rect x="142" y="282" width="16" height="14" rx="3"/>
-              </g>
-              <rect x="150" y="0" width="150" height="360" fill="url(#scanlines)" opacity=".3"/>
-            </g>
-
-            <rect x="0" y="0" width="150" height="360" filter="url(#grain)" opacity=".3" style="mix-blend-mode:overlay"/>
-            <rect x="0" y="0" width="300" height="360" fill="url(#vignette)"/>
-            <line x1="150" y1="20" x2="150" y2="340" stroke="#000" stroke-opacity=".35" stroke-width="1"/>
-          </svg>
-          <div class="scan"></div>
-          <span class="hd-badge">IA · Full HD</span>
-          <div class="plate-caption"><span>Chasis película · adiós</span><span>Chasis CR · BioRX</span></div>
+      <!-- CMS: mockup del software — el recuadro .app-mock-preview admite una captura real vía style="--bg-preview:url(...)" -->
+      <div class="device" aria-hidden="true">
+        <div class="device-top"><span>BIORX · PANEL EN VIVO</span><div class="dot-row"><span></span><span></span><span></span></div></div>
+        <div class="app-mock">
+          <div class="app-mock-top">
+            <div>
+              <span class="app-mock-label">Estudio seleccionado</span>
+              <h4>Tórax PA · Paciente 0231</h4>
+            </div>
+            <span class="hd-badge">IA · Realzado</span>
+          </div>
+          <div class="app-mock-preview"><div class="scan"></div></div>
+          <div class="app-mock-list">
+            <div class="app-row"><span class="dot ready"></span><div class="app-row-info"><b>Tórax PA</b><small>Paciente 0231 · hace 12 seg</small></div><span class="chip">Enviado ✓</span></div>
+            <div class="app-row"><span class="dot busy"></span><div class="app-row-info"><b>Mano izquierda</b><small>Paciente 0197 · hace 4 min</small></div><span class="chip busy">Procesando IA</span></div>
+            <div class="app-row"><span class="dot ready"></span><div class="app-row-info"><b>Columna lumbar</b><small>Paciente 0195 · hace 11 min</small></div><span class="chip">Listo</span></div>
+          </div>
         </div>
-        <div class="device-foot"><span>Sin película ni químicos</span><span class="mono">Placa de fósforo reutilizable</span></div>
       </div>
     </div>
   </section>
 
-  <!-- CMS: barra de estadísticas del problema -->
-  <section class="stat-strip">
+  <!-- CMS: barra de estadísticas del problema — bg-slot admite imagen de fondo -->
+  <section class="stat-strip bg-slot variant-c">
     <div class="wrap">
       <div class="stat"><b>0</b><span>placas de película que vuelves a comprar</span></div>
       <div class="stat"><b>1,000+</b><span>usos por cada chasis de fósforo reutilizable</span></div>
@@ -480,7 +414,8 @@
   </section>
 
   <!-- CMS: sección Dos caminos para empezar -->
-  <section id="rutas" class="wrap">
+  <section id="rutas" class="bg-slot">
+   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">Dos caminos, un mismo software</span>
       <h2>Empieza tengas o no un digitalizador hoy</h2>
@@ -511,10 +446,12 @@
         <a class="btn btn-primary btn-block" id="path-b-wa" href="#" target="_blank" rel="noopener">Quiero conectar mi equipo actual</a>
       </div>
     </div>
+   </div>
   </section>
 
   <!-- CMS: sección Cómo funciona / Tecnología -->
-  <section id="tecnologia" class="wrap">
+  <section id="tecnologia" class="bg-slot variant-b">
+   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">Tecnología · ruta sin digitalizador</span>
       <h2>De la toma de rayos X a una imagen digital, sin película, en 4 pasos</h2>
@@ -535,10 +472,12 @@
         <p>Esa placa se lee con el lector láser que te instalamos, que libera la imagen como datos digitales — la misma placa se borra y se reutiliza miles de veces. Resultado: nunca más dependes de que llegue película al país, y cada estudio sale directo en digital, listo para IA, WhatsApp o tu visor en pantalla. Si tu centro ya cuenta con un equipo CR o DR digital propio, también lo integramos directo por red o DICOM, sin instalar nada nuevo.</p>
       </div>
     </div>
+   </div>
   </section>
 
   <!-- CMS: sección Calidad de imagen -->
-  <section id="calidad" class="wrap">
+  <section id="calidad" class="bg-slot variant-c">
+   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">Ficha técnica</span>
       <h2>Calidad de imagen de nivel profesional</h2>
@@ -560,10 +499,12 @@
         <div class="row"><span>Impresión física</span><span>Papel fotográfico o película seca, bajo demanda</span></div>
       </div>
     </div>
+   </div>
   </section>
 
   <!-- CMS: sección Planes -->
-  <section id="planes" class="wrap">
+  <section id="planes" class="bg-slot">
+   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">Planes mensuales</span>
       <h2>Un plan por cantidad de revelados, no por sorpresas</h2>
@@ -604,10 +545,12 @@
         <a class="btn btn-ghost btn-block plan-wa" data-plan="Plus ($300/mes · revelados ilimitados)" href="#" target="_blank" rel="noopener">Elegir Plus</a>
       </div>
     </div>
+   </div>
   </section>
 
   <!-- CMS: sección Implementación -->
-  <section id="implementacion" class="wrap">
+  <section id="implementacion" class="bg-slot variant-b">
+   <div class="wrap">
     <div class="impl">
       <div>
         <span class="impl-tag">Oferta de lanzamiento</span>
@@ -625,10 +568,12 @@
         <li>Soporte de garantía durante los primeros 30 días</li>
       </ul>
     </div>
+   </div>
   </section>
 
   <!-- CMS: sección Para quién es -->
-  <section class="wrap">
+  <section class="bg-slot variant-c">
+   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">Para quién es BioRX</span>
       <h2>Construido para el personal de salud que aún revela con químicos</h2>
@@ -639,10 +584,12 @@
       <div class="aud-card"><div class="ic">🧪</div><h3>Laboratorios clínicos</h3><p>Integra imagenología a tus procesos de auditoría médica y reportes.</p></div>
       <div class="aud-card"><div class="ic">🏘️</div><h3>Clínicas y hospitales rurales</h3><p>Lleva telemedicina a zonas donde renovar el equipo no es viable hoy.</p></div>
     </div>
+   </div>
   </section>
 
   <!-- CMS: FAQ -->
-  <section id="faq" class="wrap">
+  <section id="faq" class="bg-slot">
+   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow">Preguntas frecuentes</span>
       <h2>Todo lo que necesitas saber antes de empezar</h2>
@@ -677,10 +624,12 @@
         <p>Sí. BioRX puede imprimir en papel fotográfico de alta calidad para uso administrativo o de referencia, y también en película seca (tipo Drystar) para quien necesite el formato clásico de radiografía en el negatoscopio. Es una opción bajo demanda — el flujo principal sigue siendo 100% digital.</p>
       </details>
     </div>
+   </div>
   </section>
 
   <!-- CMS: CTA final -->
-  <section class="wrap">
+  <section class="bg-slot variant-b">
+   <div class="wrap">
     <div class="final-cta">
       <span class="eyebrow" style="justify-content:center;">Empecemos hoy</span>
       <h2>Deja de depender de la placa ortocromática, sin cambiar tu generador de rayos X</h2>
@@ -688,6 +637,7 @@
       <a class="btn btn-primary" id="final-wa" href="#" target="_blank" rel="noopener">Hablar con BioRX por WhatsApp</a>
       <p class="disclaimer">BioRX es una herramienta de digitalización y distribución de imágenes de apoyo visual y telemedicina. No sustituye el criterio del médico especialista ni reemplaza equipos certificados para diagnóstico primario donde la normativa local lo exija.</p>
     </div>
+   </div>
   </section>
 </main>
 
