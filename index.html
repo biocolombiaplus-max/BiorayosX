@@ -110,7 +110,6 @@
   nav.links a{color:var(--ink-dim); text-decoration:none;}
   nav.links a:hover{color:var(--ink);}
   .nav-actions{display:flex; align-items:center; gap:14px;}
-  .menu-btn{display:none; background:none; border:1px solid var(--line); border-radius:8px; width:38px; height:38px; color:var(--ink);}
 
   /* HERO */
   .hero{padding-block:clamp(48px,8vw,88px) clamp(40px,7vw,72px);}
@@ -259,6 +258,24 @@
     text-decoration:none; box-shadow:0 16px 34px -12px color-mix(in srgb, var(--mint) 55%, transparent);
   }
 
+  /* app-style bottom tab bar (mobile only) */
+  .tabbar{
+    display:none; position:fixed; left:0; right:0; bottom:0; z-index:60;
+    background:color-mix(in srgb, var(--surface) 94%, transparent);
+    backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    border-top:1px solid var(--line);
+    padding:7px 6px calc(7px + env(safe-area-inset-bottom,0px));
+  }
+  .tabbar-row{display:grid; grid-template-columns:repeat(4,1fr); gap:2px; max-width:520px; margin-inline:auto;}
+  .tabbar-row a{
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    text-decoration:none; color:var(--ink-dim); font-size:.62rem; font-weight:700;
+    padding:6px 2px; border-radius:12px; letter-spacing:.01em;
+  }
+  .tabbar-row a .tab-ic{font-size:1.15rem; line-height:1;}
+  .tabbar-row a:active{background:var(--surface-2);}
+  .tabbar-row a.tab-wa{color:var(--mint);}
+
   @media (max-width:980px){
     .hero-grid{grid-template-columns:1fr;}
     .stat-strip .wrap{grid-template-columns:repeat(2,1fr); row-gap:22px;}
@@ -268,7 +285,9 @@
     .audience{grid-template-columns:repeat(2,1fr);}
     .foot-grid{grid-template-columns:repeat(2,1fr);}
     nav.links{display:none;}
-    .menu-btn{display:block;}
+    .tabbar{display:block;}
+    .wa-float{display:none;}
+    body{padding-bottom:calc(66px + env(safe-area-inset-bottom,0px));}
   }
   @media (max-width:560px){
     .stat-strip .wrap{grid-template-columns:1fr 1fr;}
@@ -278,7 +297,8 @@
     .datasheet{grid-template-columns:1fr;}
     .audience{grid-template-columns:1fr;}
     .foot-grid{grid-template-columns:1fr;}
-    .wa-float span.wa-text{display:none;}
+    .hero-ctas{flex-direction:column; align-items:stretch;}
+    .hero-ctas .btn{width:100%;}
   }
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -383,11 +403,11 @@
     <div class="paths">
       <div class="path-card">
         <div class="path-head"><div class="path-ic" aria-hidden="true">🎞️</div><h3>No tengo digitalizador</h3></div>
-        <p class="path-sub">Sigues revelando con placa ortocromática y químicos.</p>
+        <p class="path-sub">Sigues revelando con placa ortocromática y químicos. <strong>Nosotros te llevamos el equipo</strong> — no tienes que comprar nada por tu cuenta.</p>
         <ul class="path-steps">
-          <li><b>01</b>Instalamos un chasis CR de placa de fósforo en tu equipo actual.</li>
+          <li><b>01</b>Te suministramos e instalamos el kit BioRX completo: chasis CR + lector.</li>
           <li><b>02</b>Tomas la radiografía igual que siempre, sin película.</li>
-          <li><b>03</b>El lector BioRX convierte la placa en imagen digital al instante.</li>
+          <li><b>03</b>El lector que te instalamos convierte la placa en imagen digital al instante.</li>
           <li><b>04</b>La IA la realza y la envías por WhatsApp o correo.</li>
         </ul>
         <a class="btn btn-ghost btn-block" id="path-a-wa" href="#" target="_blank" rel="noopener">Quiero instalar mi kit CR</a>
@@ -415,9 +435,9 @@
       <p>El detalle paso a paso para consultorios y centros que hoy dependen de conseguir placa ortocromática y químicos de revelado.</p>
     </div>
     <div class="steps">
-      <div class="step"><span class="step-num">01</span><h3>Instalamos tu chasis CR</h3><p>Reemplazamos el chasis de película por un chasis reutilizable de placa de fósforo — mismo tamaño, mismo bucky, sin modificar tu generador de rayos X.</p></div>
+      <div class="step"><span class="step-num">01</span><h3>Te suministramos el kit CR</h3><p>Te llevamos e instalamos el chasis de placa de fósforo <strong>y el lector</strong> — el equipo completo lo pone BioRX, no necesitas comprarlo aparte. Mismo tamaño, mismo bucky, sin modificar tu generador de rayos X.</p></div>
       <div class="step"><span class="step-num">02</span><h3>Tomas la radiografía como siempre</h3><p>El chasis CR captura la imagen en la placa de fósforo, sin película ni químicos de revelado.</p></div>
-      <div class="step"><span class="step-num">03</span><h3>Lees la placa en el lector BioRX</h3><p>El lector convierte la placa en imagen digital y nuestra IA ajusta contraste, nitidez y densidad automáticamente.</p></div>
+      <div class="step"><span class="step-num">03</span><h3>Lees la placa en el lector que te instalamos</h3><p>Ese mismo lector convierte la placa en imagen digital y nuestra IA ajusta contraste, nitidez y densidad automáticamente.</p></div>
       <div class="step"><span class="step-num">04</span><h3>Envías y proyectas al instante</h3><p>Comparte por WhatsApp o correo, o ábrela en el visor web BioRX desde una TV, computador o celular. La placa se borra sola y queda lista para el siguiente paciente.</p></div>
     </div>
 
@@ -425,8 +445,8 @@
       <div class="icon" aria-hidden="true"></div>
       <div>
         <h4>¿Por qué esto sí resuelve la escasez de placa en Venezuela?</h4>
-        <p>El problema real no es solo que el equipo sea viejo — es que cada vez es más difícil conseguir película ortocromática y los químicos para revelarla. BioRX <strong>no modifica tu generador de rayos X</strong>: solo reemplaza lo que recibe la imagen. En vez de un chasis de película de un solo uso, instalamos un chasis con una <strong>placa de fósforo reutilizable</strong> (tecnología CR, la misma que usan los digitalizadores profesionales).</p>
-        <p>Esa placa se lee con un lector láser que libera la imagen como datos digitales — la misma placa se borra y se reutiliza miles de veces. Resultado: nunca más dependes de que llegue película al país, y cada estudio sale directo en digital, listo para IA, WhatsApp o tu visor en pantalla. Si tu centro ya cuenta con un equipo CR o DR digital, también lo integramos directo por red o DICOM.</p>
+        <p>El problema real no es solo que el equipo sea viejo — es que cada vez es más difícil conseguir película ortocromática y los químicos para revelarla. BioRX <strong>no modifica tu generador de rayos X</strong>: solo reemplaza lo que recibe la imagen. En vez de un chasis de película de un solo uso, te suministramos e instalamos un chasis con una <strong>placa de fósforo reutilizable</strong> junto con su lector (tecnología CR, la misma que usan los digitalizadores profesionales) — <strong>el equipo lo aportamos nosotros</strong>, tú no tienes que comprarlo por separado.</p>
+        <p>Esa placa se lee con el lector láser que te instalamos, que libera la imagen como datos digitales — la misma placa se borra y se reutiliza miles de veces. Resultado: nunca más dependes de que llegue película al país, y cada estudio sale directo en digital, listo para IA, WhatsApp o tu visor en pantalla. Si tu centro ya cuenta con un equipo CR o DR digital propio, también lo integramos directo por red o DICOM, sin instalar nada nuevo.</p>
       </div>
     </div>
   </section>
@@ -511,7 +531,7 @@
         <a class="btn btn-primary" id="impl-wa" href="#" target="_blank" rel="noopener">Agendar implementación</a>
       </div>
       <ul>
-        <li>Instalación del chasis CR, o conexión DICOM si ya tienes digitalizador</li>
+        <li>Suministro e instalación del kit CR completo (chasis + lector), o conexión DICOM si ya tienes digitalizador propio</li>
         <li>Calibración del lector o del enlace con tu generador de rayos X</li>
         <li>Pruebas de calidad con placas de referencia</li>
         <li>Ajuste del motor de IA a tu equipo y tipo de estudios</li>
@@ -621,6 +641,15 @@
   <span class="wa-text">WhatsApp</span>
 </a>
 
+<nav class="tabbar" aria-label="Navegación rápida">
+  <div class="tabbar-row">
+    <a href="#"><span class="tab-ic" aria-hidden="true">🏠</span>Inicio</a>
+    <a href="#rutas"><span class="tab-ic" aria-hidden="true">🧭</span>Rutas</a>
+    <a href="#planes"><span class="tab-ic" aria-hidden="true">💳</span>Planes</a>
+    <a class="tab-wa" id="tab-wa" href="#" target="_blank" rel="noopener"><span class="tab-ic" aria-hidden="true">💬</span>WhatsApp</a>
+  </div>
+</nav>
+
 <script>
 (function(){
   try{
@@ -633,7 +662,7 @@
 
     function link(text){ return base + encodeURIComponent(text); }
 
-    ["nav-wa","hero-wa","final-wa","float-wa"].forEach(function(id){
+    ["nav-wa","hero-wa","final-wa","float-wa","tab-wa"].forEach(function(id){
       var el = document.getElementById(id);
       if(el) el.href = link(defaultMsg);
     });
