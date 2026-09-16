@@ -180,7 +180,20 @@
   .datasheet .row span:first-child{color:var(--ink-dim);}
   .datasheet .row span:last-child{font-family:"JetBrains Mono",monospace; font-weight:600; text-align:right;}
   .datasheet-col:last-child .row:last-child, .datasheet-col:first-child .row:last-child{border-bottom:none;}
-  @media (max-width:760px){ .datasheet{grid-template-columns:1fr;} }
+  @media (max-width:760px){ .datasheet{grid-template-columns:1fr;} .paths{grid-template-columns:1fr;} }
+
+  /* two paths */
+  .paths{display:grid; grid-template-columns:1fr 1fr; gap:22px;}
+  .path-card{position:relative; background:var(--surface); border:1px solid var(--line); border-radius:22px; padding:30px 26px; display:flex; flex-direction:column; gap:16px;}
+  .path-card.fast{border-color:var(--mint); box-shadow:0 0 0 1px var(--mint);}
+  .path-badge{position:absolute; top:-12px; left:26px; background:linear-gradient(100deg,var(--mint),var(--cyan)); color:#04141a; font-size:.68rem; font-weight:800; padding:5px 12px; border-radius:100px;}
+  .path-head{display:flex; align-items:center; gap:12px;}
+  .path-ic{width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; background:var(--surface-2); flex-shrink:0;}
+  .path-card h3{font-family:"Unbounded",sans-serif; font-size:1.1rem;}
+  .path-sub{color:var(--ink-dim); font-size:.86rem; line-height:1.5; margin-top:-8px;}
+  .path-steps{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:11px;}
+  .path-steps li{display:flex; gap:10px; font-size:.85rem; color:var(--ink-dim); line-height:1.45; align-items:flex-start;}
+  .path-steps li b{color:var(--cyan); font-family:"JetBrains Mono",monospace; font-size:.74rem; flex-shrink:0; width:18px; padding-top:1px;}
 
   /* pricing */
   .plans{display:grid; grid-template-columns:repeat(4,1fr); gap:18px;}
@@ -279,7 +292,7 @@
       <div>BioRX<small>Radiología con IA</small></div>
     </div>
     <nav class="links">
-      <a href="#tecnologia">Cómo funciona</a>
+      <a href="#rutas">Cómo empezar</a>
       <a href="#calidad">Calidad</a>
       <a href="#planes">Planes</a>
       <a href="#implementacion">Implementación</a>
@@ -360,12 +373,46 @@
     </div>
   </section>
 
+  <!-- CMS: sección Dos caminos para empezar -->
+  <section id="rutas" class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Dos caminos, un mismo software</span>
+      <h2>Empieza tengas o no un digitalizador hoy</h2>
+      <p>BioRX se adapta al punto de partida de tu centro — el resultado final es el mismo: imagen digital lista para IA y WhatsApp.</p>
+    </div>
+    <div class="paths">
+      <div class="path-card">
+        <div class="path-head"><div class="path-ic" aria-hidden="true">🎞️</div><h3>No tengo digitalizador</h3></div>
+        <p class="path-sub">Sigues revelando con placa ortocromática y químicos.</p>
+        <ul class="path-steps">
+          <li><b>01</b>Instalamos un chasis CR de placa de fósforo en tu equipo actual.</li>
+          <li><b>02</b>Tomas la radiografía igual que siempre, sin película.</li>
+          <li><b>03</b>El lector BioRX convierte la placa en imagen digital al instante.</li>
+          <li><b>04</b>La IA la realza y la envías por WhatsApp o correo.</li>
+        </ul>
+        <a class="btn btn-ghost btn-block" id="path-a-wa" href="#" target="_blank" rel="noopener">Quiero instalar mi kit CR</a>
+      </div>
+      <div class="path-card fast">
+        <span class="path-badge">Integración más rápida</span>
+        <div class="path-head"><div class="path-ic" aria-hidden="true">🖨️</div><h3>Ya tengo digitalizador (CR/DR/CT)</h3></div>
+        <p class="path-sub">Hoy imprimes en película seca Drystar u otra similar.</p>
+        <ul class="path-steps">
+          <li><b>01</b>Conectamos BioRX a tu equipo por DICOM — sin comprar nada nuevo.</li>
+          <li><b>02</b>Tu equipo sigue funcionando exactamente igual que hoy.</li>
+          <li><b>03</b>Cada estudio llega automático a BioRX, no solo a la impresora.</li>
+          <li><b>04</b>Se envía por WhatsApp al instante y dejas de gastar en película seca.</li>
+        </ul>
+        <a class="btn btn-primary btn-block" id="path-b-wa" href="#" target="_blank" rel="noopener">Quiero conectar mi equipo actual</a>
+      </div>
+    </div>
+  </section>
+
   <!-- CMS: sección Cómo funciona / Tecnología -->
   <section id="tecnologia" class="wrap">
     <div class="section-head">
-      <span class="eyebrow">Tecnología</span>
+      <span class="eyebrow">Tecnología · ruta sin digitalizador</span>
       <h2>De la toma de rayos X a una imagen digital, sin película, en 4 pasos</h2>
-      <p>Diseñado para consultorios y centros que hoy dependen de conseguir placa ortocromática y químicos de revelado.</p>
+      <p>El detalle paso a paso para consultorios y centros que hoy dependen de conseguir placa ortocromática y químicos de revelado.</p>
     </div>
     <div class="steps">
       <div class="step"><span class="step-num">01</span><h3>Instalamos tu chasis CR</h3><p>Reemplazamos el chasis de película por un chasis reutilizable de placa de fósforo — mismo tamaño, mismo bucky, sin modificar tu generador de rayos X.</p></div>
@@ -394,7 +441,8 @@
     <div class="datasheet">
       <div class="datasheet-col">
         <div class="row"><span>Tecnología de captura</span><span>Placa de fósforo (CR), 14x17" alta densidad</span></div>
-        <div class="row"><span>Compatibilidad</span><span>Se instala en el bucky de tu equipo actual</span></div>
+        <div class="row"><span>Compatibilidad sin digitalizador</span><span>Se instala en el bucky de tu equipo actual</span></div>
+        <div class="row"><span>Compatibilidad con equipo existente</span><span>CR, DR y tomógrafos vía DICOM, cualquier marca</span></div>
         <div class="row"><span>Consumibles</span><span>Ninguno: cero película, cero químicos</span></div>
         <div class="row"><span>Corrección y realce</span><span>Automático por IA BioRX</span></div>
       </div>
@@ -403,6 +451,7 @@
         <div class="row"><span>Exportación DICOM</span><span>En hoja de ruta</span></div>
         <div class="row"><span>Visor web (zoom, brillo/contraste)</span><span>Incluido</span></div>
         <div class="row"><span>Entrega</span><span>WhatsApp, correo o enlace</span></div>
+        <div class="row"><span>Impresión física</span><span>Papel fotográfico o película seca, bajo demanda</span></div>
       </div>
     </div>
   </section>
@@ -412,7 +461,7 @@
     <div class="section-head">
       <span class="eyebrow">Planes mensuales</span>
       <h2>Un plan por cantidad de revelados, no por sorpresas</h2>
-      <p>El tamaño de referencia de cada revelado equivale a una placa 14x17 Agfa de alto nivel. Precios en dólares, facturación mensual.</p>
+      <p>El tamaño de referencia de cada revelado equivale a una placa 14x17 Agfa de alto nivel. Precios en dólares, facturación mensual. Aplican igual si instalas nuestro kit CR o si ya tienes tu propio digitalizador — el precio es por estudio procesado, no por el origen del equipo.</p>
     </div>
     <div class="plans">
       <div class="plan">
@@ -462,8 +511,8 @@
         <a class="btn btn-primary" id="impl-wa" href="#" target="_blank" rel="noopener">Agendar implementación</a>
       </div>
       <ul>
-        <li>Instalación del chasis CR (placa de fósforo) en tu equipo actual</li>
-        <li>Calibración del lector con tu generador de rayos X</li>
+        <li>Instalación del chasis CR, o conexión DICOM si ya tienes digitalizador</li>
+        <li>Calibración del lector o del enlace con tu generador de rayos X</li>
         <li>Pruebas de calidad con placas de referencia</li>
         <li>Ajuste del motor de IA a tu equipo y tipo de estudios</li>
         <li>Capacitación al personal técnico y administrativo</li>
@@ -516,6 +565,10 @@
       <details>
         <summary>¿Cómo veo la imagen en una TV?</summary>
         <p>Desde el visor web BioRX en cualquier navegador conectado a la TV, o compartiendo la imagen recibida por WhatsApp directamente al dispositivo.</p>
+      </details>
+      <details>
+        <summary>¿Puedo imprimir la imagen en papel si el médico la necesita físicamente?</summary>
+        <p>Sí. BioRX puede imprimir en papel fotográfico de alta calidad para uso administrativo o de referencia, y también en película seca (tipo Drystar) para quien necesite el formato clásico de radiografía en el negatoscopio. Es una opción bajo demanda — el flujo principal sigue siendo 100% digital.</p>
       </details>
     </div>
   </section>
@@ -575,6 +628,8 @@
     var base = "https://wa.me/" + phone + "?text=";
     var defaultMsg = "Hola, quiero información sobre BioRX para digitalizar mi equipo de rayos X.";
     var implMsg = "Hola, quiero agendar la implementación de BioRX ($200 - precio de lanzamiento) en mi centro.";
+    var pathAMsg = "Hola, no tengo digitalizador y quiero instalar el kit CR de BioRX en mi equipo de rayos X.";
+    var pathBMsg = "Hola, ya tengo un equipo digitalizador (CR/DR/CT) y quiero conectarlo a BioRX para dejar de imprimir en película seca.";
 
     function link(text){ return base + encodeURIComponent(text); }
 
@@ -586,6 +641,10 @@
     if(footWa) footWa.href = link(defaultMsg);
     var implWa = document.getElementById("impl-wa");
     if(implWa) implWa.href = link(implMsg);
+    var pathAWa = document.getElementById("path-a-wa");
+    if(pathAWa) pathAWa.href = link(pathAMsg);
+    var pathBWa = document.getElementById("path-b-wa");
+    if(pathBWa) pathBWa.href = link(pathBMsg);
 
     document.querySelectorAll(".plan-wa").forEach(function(btn){
       var plan = btn.getAttribute("data-plan");
